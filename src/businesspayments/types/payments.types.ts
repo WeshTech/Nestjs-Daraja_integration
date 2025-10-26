@@ -23,3 +23,10 @@ export type PendingPaymentResponse = {
   message: string;
   data: null;
 };
+
+//successful transaction response
+export type SuccessfulPaymentResponse = {
+  success: boolean;
+  message: string;
+  data: null;
+};

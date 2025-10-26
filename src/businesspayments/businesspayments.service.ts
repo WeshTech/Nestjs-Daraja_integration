@@ -8,6 +8,10 @@ import axios from 'axios';
 
 import { AuthorizationResponse, StkPushResponse } from './types/payments.types';
 import { CreatePaymentDto } from './dtos/CreatePayment.dto';
+import {
+  MpesaCallbackDto,
+  MpesaReceiptNumberItemDto,
+} from './dtos/success.dto';
 
 @Injectable()
 export class BusinesspaymentsService {
@@ -78,7 +82,7 @@ export class BusinesspaymentsService {
     const password = this.generatePassword(timestamp);
 
     const requestData = {
-      BusinessShortCode: this.shortcode,
+      BusinessShortCode: this.shortcode, //174379 - use this in sandbox mode😂
       Password: password,
       Timestamp: timestamp,
       TransactionType: 'CustomerPayBillOnline',
@@ -103,8 +107,7 @@ export class BusinesspaymentsService {
       );
 
       return response.data;
-    } catch (error) {
-      console.error(`Failed to send payment request: ${error}`);
+    } catch {
       return {
         success: false,
         message: 'Failed to send payment request',
@@ -136,6 +139,16 @@ export class BusinesspaymentsService {
         message: 'Payment request sent to phone number',
         data: null,
       };
+    }
+  }
+
+  //handle callback
+  async handleMpesaCallback(callbackDto: MpesaCallbackDto) {
+    const stkCallback = callbackDto.Body.stkCallback;
+    const { ResultCode } = stkCallback;
+
+    if (ResultCode === 0) {
+      console.log({ callbackDto });
     }
   }
 }
